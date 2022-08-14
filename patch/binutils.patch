@@ -1,0 +1,102 @@
+diff -ru ../dist/binutils-2.13.2.1/bfd/coff-m68k.c ./bfd/coff-m68k.c
+--- ../dist/binutils-2.13.2.1/bfd/coff-m68k.c	2001-09-18 02:57:22.000000000 -0700
++++ ./bfd/coff-m68k.c	2022-08-14 09:51:09.473090778 -0700
+@@ -51,8 +51,8 @@
+ #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (2)
+ 
+ #ifndef COFF_PAGE_SIZE
+-/* The page size is a guess based on ELF.  */
+-#define COFF_PAGE_SIZE 0x2000
++/* The page size is a guess based the AT&T Unix PC.  */
++#define COFF_PAGE_SIZE 0x0400 /* For the Unix PC this is the required file block alignment, not the actual VM page size */
+ #endif
+ 
+ #ifndef COFF_COMMON_ADDEND
+diff -ru ../dist/binutils-2.13.2.1/gas/as.h ./gas/as.h
+--- ../dist/binutils-2.13.2.1/gas/as.h	2002-07-13 18:14:19.000000000 -0700
++++ ./gas/as.h	2022-08-14 09:49:11.077095998 -0700
+@@ -610,6 +610,22 @@
+ 
+ #include "expr.h"		/* Before targ-*.h */
+ 
++struct relax_type
++{
++  /* Forward reach. Signed number. > 0.  */
++  long rlx_forward;
++  /* Backward reach. Signed number. < 0.  */
++  long rlx_backward;
++
++  /* Bytes length of this address.  */
++  unsigned char rlx_length;
++
++  /* Next longer relax-state.  0 means there is no 'next' relax-state.  */
++  relax_substateT rlx_more;
++};
++
++typedef struct relax_type relax_typeS;
++
+ /* this one starts the chain of target dependant headers */
+ #include "targ-env.h"
+ 
+diff -ru ../dist/binutils-2.13.2.1/gas/tc.h ./gas/tc.h
+--- ../dist/binutils-2.13.2.1/gas/tc.h	2001-11-15 13:28:53.000000000 -0800
++++ ./gas/tc.h	2022-08-14 09:49:11.077095998 -0700
+@@ -24,25 +24,6 @@
+ 
+ extern const pseudo_typeS md_pseudo_table[];
+ 
+-/* JF moved this here from as.h under the theory that nobody except MACHINE.c
+-   and write.c care about it anyway.  */
+-
+-struct relax_type
+-{
+-  /* Forward reach. Signed number. > 0.  */
+-  long rlx_forward;
+-  /* Backward reach. Signed number. < 0.  */
+-  long rlx_backward;
+-
+-  /* Bytes length of this address.  */
+-  unsigned char rlx_length;
+-
+-  /* Next longer relax-state.  0 means there is no 'next' relax-state.  */
+-  relax_substateT rlx_more;
+-};
+-
+-typedef struct relax_type relax_typeS;
+-
+ extern const int md_reloc_size;	/* Size of a relocation record */
+ 
+ char *md_atof PARAMS ((int what_statement_type, char *literalP, int *sizeP));
+diff -ru ../dist/binutils-2.13.2.1/ld/configure.tgt ./ld/configure.tgt
+--- ../dist/binutils-2.13.2.1/ld/configure.tgt	2002-10-28 07:58:12.000000000 -0800
++++ ./ld/configure.tgt	2022-08-14 09:49:11.081095997 -0700
+@@ -321,6 +321,7 @@
+ m68*-motorola-sysv*)	targ_emul=delta68 ;;
+ m68*-*-aout)		targ_emul=m68kaout ;;
+ m68*-*-coff)		targ_emul=m68kcoff ;;
++m68*-*-sysv)		targ_emul=m68kcoff ;;
+ m68*-*-elf)		targ_emul=m68kelf ;;
+ m68*-*-hpux*)		targ_emul=hp3hpux ;;
+ m68k-*-linux*aout*)	targ_emul=m68klinux
+Only in ./ld: configure.tgt.orig
+diff -ru ../dist/binutils-2.13.2.1/ld/scripttempl/m68kcoff.sc ./ld/scripttempl/m68kcoff.sc
+--- ../dist/binutils-2.13.2.1/ld/scripttempl/m68kcoff.sc	1999-05-03 00:29:08.000000000 -0700
++++ ./ld/scripttempl/m68kcoff.sc	2022-08-14 09:53:00.189085897 -0700
+@@ -4,7 +4,7 @@
+ PROVIDE (__stack = 0); 
+ SECTIONS
+ {
+-  .text ${RELOCATING+ 0x1000000} : {
++  .text ${RELOCATING+ 0x0080000} : {
+     *(.text)
+     ${CONSTRUCTING+ . = ALIGN(4);}
+     ${RELOCATING+ etext  =  .;}
+@@ -19,7 +19,7 @@
+     ${CONSTRUCTING+ LONG(0)}
+     ${CONSTRUCTING+ __DTOR_END__ = .;}
+   }
+-  .data : {
++  .data ${RELOCATING+ ALIGN(0x10000)} : {
+     *(.data)
+     ${RELOCATING+ edata  =  .};
+   }
