@@ -1,6 +1,14 @@
 #!/bin/sh
 PREFIX=${PREFIX-/opt/unixpc}
 
+case $PATH in
+*$PREFIX/bin*)
+	;;
+*)
+	PATH=$PATH:$PREFIX/bin
+	;;
+esac
+
 set -e -x
 
 mkdir build
