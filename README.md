@@ -5,11 +5,11 @@ This is rudimentary semi-ancient GCC cross compiler for the AT&T Unix PC
 
 On a 32-bit system:
 
-	PREFIX=/some/path sh build-and-install.sh
+	PREFIX=/some/path ./build-and-install.sh
 
 On a 64-bit system, make sure `libc6-dev-i386` is installed, then:
 
-	PREFIX=/some/path CC='gcc -m32' sh build-and-install.sh
+	PREFIX=/some/path CC='gcc -m32' ./build-and-install.sh
 
 # To run:
 
@@ -17,7 +17,7 @@ On a 64-bit system, make sure `libc6-dev-i386` is installed, then:
 
 # To clean up this directory after installing:
 
-	sh clean.sh
+	./clean.sh
 
 # To remove everything installed:
 
