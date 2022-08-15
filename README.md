@@ -3,7 +3,13 @@ This is rudimentary semi-ancient GCC cross compiler for the AT&T Unix PC
 
 # To install:
 
+On a 32-bit system:
+
 	PREFIX=/some/path sh build-and-install.sh
+
+On a 64-bit system, make sure `libc6-dev-i386` is installed, then:
+
+	PREFIX=/some/path CC='gcc -m32' sh build-and-install.sh
 
 # To run:
 
@@ -24,14 +30,11 @@ built by the build script).  The resulting `hello` executable was copied into
 a Unix 3.51m installation in the FreeBee emulator, where it indeed printed
 "hello, world".
 
-Also, this has been built only under 32-bit Linux (Debian Bullseye i386).
-
-My earlier attempt to do this definitely didn't work under 64-bit Linux,
-due to super-sketchy code in both binutils and gcc.  I've subsequently
-moved both to newer versions than my first attempt, but I doubt whether
-they are 64-bit clean.  My dim recollection of those ancient days is that
-binutils and gcc cross-compiling really only worked well between machines
-of the same word size.
+This must be built in 32-bit mode.  It doesn't work when built to run
+in 64-bit mode, due to super-sketchy code in both binutils and gcc.
+My dim recollection of those ancient days is that binutils and gcc support
+for cross-compiling really only worked well between machines of the same
+word size.
 
 There is, as yet, no support for the Unix PC shared library.
 
