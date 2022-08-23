@@ -41,15 +41,17 @@ There is, as yet, no support for the Unix PC shared library.
 Non-default linker modes, like -n and -N, may appear to work, but don't do
 what they're supposed to.
 
-GNU-style static constructors probably work, but static destructors definitely
-don't work, because the Unix PC standard C library doesn't have `atexit()`.
-
-The Unix PC standard C library is very, um, non-standard.  It also predates
-the C standard by several years, so this should not come as a huge surprise.
+In order to support GNU-style static constructors and destructors,
+this port bundles its own version of the C library runtime startup
+crt0.o, which includes homebrew implementations of atexit() and exit().
+This isn't implemented yet for the other versions of C library startup
+(profiling and shared library variants of C start up).  The profiling
+version should be fairly straightforward, but a shared library version
+may require replacing the shared library itself.
 
 # Future plans (maybe)
 
-* add `atexit()`
+* add support for profiling C library startup
 
 * add support for the Unix PC's shared library
 

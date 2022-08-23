@@ -74,16 +74,3 @@ diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
  
  /* Specify how to pad function arguments.
     Value should be `upward', `downward' or `none'.
-diff -ru ../dist/gcc-3.3.6/gcc/libgcc2.c ./gcc/libgcc2.c
---- ../dist/gcc-3.3.6/gcc/libgcc2.c	2002-10-23 03:47:24.000000000 -0700
-+++ ./gcc/libgcc2.c	2022-08-14 09:59:25.961068889 -0700
-@@ -1861,7 +1861,9 @@
-   }
- #endif
-   DO_GLOBAL_CTORS_BODY;
-+#ifndef __unixpc__
-   atexit (__do_global_dtors);
-+#endif
- }
- #endif /* no HAS_INIT_SECTION */
- 

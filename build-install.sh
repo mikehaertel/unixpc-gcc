@@ -35,4 +35,6 @@ cd ../lib
 $PREFIX/bin/unixpc-as crt0.s -o $PREFIX/unixpc/lib/crt0.o
 cd ..
 
-$PREFIX/bin/unixpc-gcc -o hello hello.c -O -v
+$PREFIX/bin/unixpc-gcc -o build/hello test/hello.c -O
+$PREFIX/bin/unixpc-gcc -o build/testexit test/testexit.c -O
+$PREFIX/bin/unixpc-gcc -o build/testmain test/testmain.c -O
