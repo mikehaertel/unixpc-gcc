@@ -32,7 +32,13 @@ make && make install
 cd ..
 
 cd ../lib
-$PREFIX/bin/unixpc-as crt0.s -o $PREFIX/unixpc/lib/crt0.o
+$PREFIX/bin/unixpc-gcc -c -O2 -Wall atexit.c -o ../build/atexit.o
+$PREFIX/bin/unixpc-gcc -c -O2 -Wall exit.c -o ../build/exit.o
+$PREFIX/bin/unixpc-as -o ../build/_exit.o _exit.s
+
+cd ../build
+$PREFIX/bin/unixpc-ar r $PREFIX/unixpc/lib/libc.a atexit.o exit.o _exit.o
+
 cd ..
 
 $PREFIX/bin/unixpc-gcc -o build/hello test/hello.c -O

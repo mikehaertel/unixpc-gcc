@@ -25,10 +25,8 @@ On a 64-bit system, make sure `libc6-dev-i386` is installed, then:
 
 # Caveats
 
-This has been tested only with a simple "hello, world" program (included, and
-built by the build script).  The resulting `hello` executable was copied into
-a Unix 3.51m installation in the FreeBee emulator, where it indeed printed
-"hello, world".
+This has been tested only with few "hello, world" type programs (included,
+and built by the build script).
 
 This must be built in 32-bit mode.  It doesn't work when built to run
 in 64-bit mode, due to super-sketchy code in both binutils and gcc.
@@ -42,18 +40,20 @@ Non-default linker modes, like -n and -N, may appear to work, but don't do
 what they're supposed to.
 
 In order to support GNU-style static constructors and destructors,
-this port bundles its own version of the C library runtime startup
-crt0.o, which includes homebrew implementations of atexit() and exit().
-This isn't implemented yet for the other versions of C library startup
-(profiling and shared library variants of C start up).  The profiling
-version should be fairly straightforward, but a shared library version
-may require replacing the shared library itself.
+this port provides its own implementations of the C library functions
+`atexit()`, `exit()`, and `_exit()`, and installs these in its private
+copy of libc.a.
+
+These new functions aren't implemented yet for the profiling version of
+the C library, nor for the shared library /lib/shlib.  So currently this
+cross compiler only creates statically linked, non-profiled programs.
 
 # Future plans (maybe)
 
-* add support for profiling C library startup
+* add atexit() support to the profiling C library
 
-* add support for the Unix PC's shared library
+* add atexit() support for the Unix PC's shared library /lib/shlib
+  (this will require installation of a new /lib/shlib on the 3b1)
 
 * cross-compile the compiler itself for a Unix PC native version of GCC
   (this might require moving to an even older version of GCC to fit the
