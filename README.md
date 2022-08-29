@@ -28,6 +28,8 @@ On a 64-bit system, make sure `libc6-dev-i386` is installed, then:
 This has been tested only with few "hello, world" type programs (included,
 and built by the build script).
 
+In particular, floating point arithmetic support is TBD.
+
 This must be built in 32-bit mode.  It doesn't work when built to run
 in 64-bit mode, due to super-sketchy code in both binutils and gcc.
 My dim recollection of those ancient days is that binutils and gcc support
@@ -49,6 +51,8 @@ the C library, nor for the shared library /lib/shlib.  So currently this
 cross compiler only creates statically linked, non-profiled programs.
 
 # Future plans (maybe)
+
+* add libgcc runtime support for floating point arithmetic
 
 * add atexit() support to the profiling C library
 
