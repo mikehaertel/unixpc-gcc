@@ -21,6 +21,23 @@ diff -ru ../dist/gcc-3.3.6/gcc/collect2.c ./gcc/collect2.c
  
        /* Duplicate the stdout and stderr file handles
  	 so they can be restored later.  */
+diff -ru ../dist/gcc-3.3.6/gcc/combine.c ./gcc/combine.c
+--- ../dist/gcc-3.3.6/gcc/combine.c	2005-01-18 00:39:05.000000000 -0800
++++ ./gcc/combine.c	2022-09-22 08:52:32.911416756 -0700
+@@ -450,11 +450,13 @@
+   if (GET_MODE_CLASS (GET_MODE (oldval)) == MODE_INT
+       && GET_CODE (newval) == CONST_INT)
+     {
++#if 0 /* This is over-enthusiastic on 64-bit hosts (from Alain Knaff) */
+       /* Sanity check that we're replacing oldval with a CONST_INT
+ 	 that is a valid sign-extension for the original mode.  */
+       if (INTVAL (newval) != trunc_int_for_mode (INTVAL (newval),
+ 						 GET_MODE (oldval)))
+ 	abort ();
++#endif
+ 
+       /* Replacing the operand of a SUBREG or a ZERO_EXTEND with a
+ 	 CONST_INT is not valid, because after the replacement, the
 diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
 --- ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h	2002-08-29 14:40:13.000000000 -0700
 +++ ./gcc/config/m68k/3b1g.h	2022-08-14 09:58:19.321071827 -0700

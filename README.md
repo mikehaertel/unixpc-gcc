@@ -3,13 +3,7 @@ This is rudimentary semi-ancient GCC cross compiler for the AT&T Unix PC
 
 # To install:
 
-On a 32-bit system:
-
 	PREFIX=/some/path ./build-install.sh
-
-On a 64-bit system, make sure `libc6-dev-i386` is installed, then:
-
-	PREFIX=/some/path CC='gcc -m32' ./build-install.sh
 
 # To run:
 
@@ -25,16 +19,9 @@ On a 64-bit system, make sure `libc6-dev-i386` is installed, then:
 
 # Caveats
 
-This has been tested only with few "hello, world" type programs (included,
-and built by the build script).
+This has been only lightly tested.
 
-In particular, floating point arithmetic support is TBD.
-
-This must be built in 32-bit mode.  It doesn't work when built to run
-in 64-bit mode, due to super-sketchy code in both binutils and gcc.
-My dim recollection of those ancient days is that binutils and gcc support
-for cross-compiling really only worked well between machines of the same
-word size.
+Floating point arithmetic support is TBD.
 
 There is, as yet, no support for the Unix PC shared library.
 
