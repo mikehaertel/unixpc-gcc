@@ -14,6 +14,18 @@ set -e -x
 mkdir build
 cd build
 
+# Some texinfo files in the build are incompatible with modern makeinfo.
+# Hide modern makeinfo by putting a fake version first in $PATH.
+# Reported by Arnold Robbins and Alain Knaff; hack suggested by Arnold Robbins.
+mkdir bin
+cat << 'EOF' > bin/makeinfo
+#!/bin/sh
+exit 0
+EOF
+chmod +x bin/makeinfo
+PATH=`pwd`/bin:$PATH
+export PATH
+
 mkdir -p $PREFIX/unixpc
 tar -C $PREFIX/unixpc -xJf ../dist/unixpc-xenv.tar.xz
 
