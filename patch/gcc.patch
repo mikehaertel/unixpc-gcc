@@ -91,3 +91,32 @@ diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
  
  /* Specify how to pad function arguments.
     Value should be `upward', `downward' or `none'.
+@@ -58,4 +94,28 @@
+ 
+ /* Generate calls to memcpy, memcmp and memset.  */
+ #define TARGET_MEM_FUNCTIONS
++  
++#define INIT_TARGET_OPTABS 					\
++  do								\
++    {								\
++      gedf2_libfunc =						\
++      gtdf2_libfunc =						\
++      ledf2_libfunc =						\
++      ltdf2_libfunc =						\
++      eqdf2_libfunc =						\
++      nedf2_libfunc =						\
++	sub_optab->handlers [(int) DFmode].libfunc;		\
++      gesf2_libfunc =						\
++      gtsf2_libfunc =						\
++      lesf2_libfunc =						\
++      ltsf2_libfunc =						\
++      eqsf2_libfunc =						\
++      nesf2_libfunc =						\
++	sub_optab->handlers [(int) SFmode].libfunc;	        \
++      add_optab->handlers [(int) SFmode].libfunc =		\
++      smul_optab->handlers [(int) SFmode].libfunc =		\
++      sdiv_optab->handlers [(int) SFmode].libfunc =		\
++	NULL_RTX;						\
++    }								\
++  while (0)
+ 

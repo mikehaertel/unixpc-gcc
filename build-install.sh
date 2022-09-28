@@ -56,14 +56,30 @@ $PREFIX/bin/unixpc-gcc -c -O3 -Os -fomit-frame-pointer -o ../build/mulsi3.o muls
 $PREFIX/bin/unixpc-gcc -c -O3 -Os -fomit-frame-pointer -o ../build/udivsi3.o udivsi3.c
 $PREFIX/bin/unixpc-gcc -c -O3 -Os -fomit-frame-pointer -o ../build/umodsi3.o umodsi3.c
 
+# Conversion operators
+for i in floatsidf floatsisf fixdfsi fixsfsi truncdfsf2 extendsfdf2 ; do
+    $PREFIX/bin/unixpc-gcc -c -O3 -Os -fomit-frame-pointer -Dop=$i -o ../build/$i.o convert.c
+    objs="$objs $i.o"
+done
+
+# Arithmetic operators
+for op in add sub div mul; do
+    $PREFIX/bin/unixpc-gcc -c -O3 -Os -fomit-frame-pointer -Dop=$op -o ../build/${op}df3.o df3.c
+    objs="$objs ${op}df3.o"
+done
+
+# Misc operators
+for i in subsf3; do
+    $PREFIX/bin/unixpc-gcc -c -O3 -Os -fomit-frame-pointer -o ../build/$i.o $i.c
+    objs="$objs $i.o"
+done
 
 cd ../build
 $PREFIX/bin/unixpc-ar r $PREFIX/unixpc/lib/libc.a atexit.o exit.o _exit.o raise.o
-$PREFIX/bin/unixpc-ar r $PREFIX/lib/gcc-lib/unixpc/3.3.6/libgcc.a divsi3.o modsi3.o mulsi3.o udivsi3.o umodsi3.o
+$PREFIX/bin/unixpc-ar r $PREFIX/lib/gcc-lib/unixpc/3.3.6/libgcc.a divsi3.o modsi3.o mulsi3.o udivsi3.o umodsi3.o $objs
 
 cd ..
 
 $PREFIX/bin/unixpc-gcc -o build/hello test/hello.c -O
 $PREFIX/bin/unixpc-gcc -o build/testexit test/testexit.c -O
 $PREFIX/bin/unixpc-gcc -o build/testmain test/testmain.c -O
-$PREFIX/bin/unixpc-gcc -DNATIVE -o build/testmath test/testmath.c -O

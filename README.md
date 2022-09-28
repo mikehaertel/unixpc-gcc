@@ -21,8 +21,6 @@ This is rudimentary semi-ancient GCC cross compiler for the AT&T Unix PC
 
 This has been only lightly tested.
 
-Floating point arithmetic support is TBD.
-
 There is, as yet, no support for the Unix PC shared library.
 
 Non-default linker modes, like -n and -N, may appear to work, but don't do
@@ -38,8 +36,6 @@ the C library, nor for the shared library /lib/shlib.  So currently this
 cross compiler only creates statically linked, non-profiled programs.
 
 # Future plans (maybe)
-
-* add libgcc runtime support for floating point arithmetic
 
 * add atexit() support to the profiling C library
 
@@ -63,4 +59,4 @@ The header and library files in `dist/unixpc-xenv.tar.xz` are copied
 from a Unix 3.51m installation, with the development tools installed,
 running under the FreeBee emulator.
 
-The patches are all my own.
+The patches are my own work together with contributions by Alain Knaff.
