@@ -29,6 +29,28 @@ export PATH
 mkdir -p $PREFIX/unixpc
 tar -C $PREFIX/unixpc -xJf ../dist/unixpc-xenv.tar.xz
 
+# Rename <sys/types.h>'s old size_t to segsz_t and update all uses (following 4.4BSD)
+for h in proc.h types.h user.h vmparam.h
+do
+	chmod u+w $PREFIX/unixpc/include/sys/$h
+	ed $PREFIX/unixpc/include/sys/$h << 'EOF' > /dev/null 2>&1
+	g/size_t/s//segsz_t/g
+	w
+	q
+EOF
+done
+# Add new ISO/POSIX-conforming definition of size_t to <sys/types.h>
+ed $PREFIX/unixpc/include/sys/types.h << 'EOF' > /dev/null 2>&1
+$i
+#undef __need_size_t
+#define __need_size_t
+#include <stddef.h>
+
+.
+w
+q
+EOF
+
 tar -xJf ../dist/binutils-2.13.2.1a.tar.xz
 cd binutils-2.13.2.1
 patch -p0 < ../../patch/binutils.patch
