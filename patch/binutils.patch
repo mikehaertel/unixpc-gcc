@@ -49,6 +49,27 @@ diff -ru ../dist/binutils-2.13.2.1/gas/as.h ./gas/as.h
  /* this one starts the chain of target dependant headers */
  #include "targ-env.h"
  
+diff -ru ../dist/binutils-2.13.2.1/gas/config/obj-coff.c ./gas/config/obj-coff.c
+--- ../dist/binutils-2.13.2.1/gas/config/obj-coff.c	2002-07-13 18:14:22.000000000 -0700
++++ ./gas/config/obj-coff.c	2022-10-03 20:44:14.852145095 -0700
+@@ -1911,7 +1911,7 @@
+   return nrelocs;
+ }
+ 
+-#ifdef TE_AUX
++#if defined(TE_AUX) || defined(TC_M68K)
+ 
+ static int compare_external_relocs PARAMS ((const PTR, const PTR));
+ 
+@@ -2064,7 +2064,7 @@
+ 
+ 		  fix_ptr = fix_ptr->fx_next;
+ 		}
+-#ifdef TE_AUX
++#if defined(TE_AUX) || defined(TC_M68K)
+ 	      /* Sort the reloc table.  */
+ 	      qsort ((PTR) external_reloc_vec, nrelocs,
+ 		     sizeof (struct external_reloc), compare_external_relocs);
 diff -ru ../dist/binutils-2.13.2.1/gas/tc.h ./gas/tc.h
 --- ../dist/binutils-2.13.2.1/gas/tc.h	2001-11-15 13:28:53.000000000 -0800
 +++ ./gas/tc.h	2022-08-14 09:49:11.077095998 -0700
