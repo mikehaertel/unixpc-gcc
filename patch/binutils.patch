@@ -12,6 +12,17 @@ diff -ru ../dist/binutils-2.13.2.1/bfd/coff-m68k.c ./bfd/coff-m68k.c
  #endif
  
  #ifndef COFF_COMMON_ADDEND
+diff -ru ../dist/binutils-2.13.2.1/bfd/coffcode.h ./bfd/coffcode.h
+--- ../dist/binutils-2.13.2.1/bfd/coffcode.h	2002-10-30 07:52:10.000000000 -0800
++++ ./bfd/coffcode.h	2022-10-03 20:44:14.836145074 -0700
+@@ -1886,6 +1886,7 @@
+       break;
+ #endif
+ #ifdef MC68MAGIC
++    case MC68KPGMAGIC:
+     case MC68MAGIC:
+     case M68MAGIC:
+ #ifdef MC68KBCSMAGIC
 diff -ru ../dist/binutils-2.13.2.1/gas/as.h ./gas/as.h
 --- ../dist/binutils-2.13.2.1/gas/as.h	2002-07-13 18:14:19.000000000 -0700
 +++ ./gas/as.h	2022-08-14 09:49:11.077095998 -0700
