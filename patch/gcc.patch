@@ -40,7 +40,7 @@ diff -ru ../dist/gcc-3.3.6/gcc/combine.c ./gcc/combine.c
  	 CONST_INT is not valid, because after the replacement, the
 diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
 --- ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h	2002-08-29 14:40:13.000000000 -0700
-+++ ./gcc/config/m68k/3b1g.h	2022-08-14 09:58:19.321071827 -0700
++++ ./gcc/config/m68k/3b1g.h	2022-10-03 20:25:39.019550342 -0700
 @@ -38,10 +38,46 @@
   "%{m68020:-mc68020}%{mc68020:-mc68020}%{!mc68020:%{!m68020:-mc68010}}"
  
@@ -91,8 +91,13 @@ diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
  
  /* Specify how to pad function arguments.
     Value should be `upward', `downward' or `none'.
-@@ -58,4 +94,28 @@
+@@ -56,6 +92,33 @@
+ /* Every structure or union's size must be a multiple of 2 bytes.  */
+ #define STRUCTURE_SIZE_BOUNDARY 16
  
++/* Every function parameter must be aligned to a multiple of 2 bytes.*/
++#define PARM_BOUNDARY 16
++  
  /* Generate calls to memcpy, memcmp and memset.  */
  #define TARGET_MEM_FUNCTIONS
 +  
