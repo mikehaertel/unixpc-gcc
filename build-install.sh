@@ -100,8 +100,39 @@ cd ../build
 $PREFIX/bin/unixpc-ar r $PREFIX/unixpc/lib/libc.a atexit.o exit.o _exit.o raise.o
 $PREFIX/bin/unixpc-ar r $PREFIX/lib/gcc-lib/unixpc/3.3.6/libgcc.a divsi3.o modsi3.o mulsi3.o udivsi3.o umodsi3.o $objs
 
+# Convert $PREFIX/unixpc/lib/shlib.ifile to a form usable by binutils ld, replacing exit()
+# Note this does not patch functions in /lib/shlib that directly link to the old version of exit(),
+# but AFAIK all such cases are functions that are part of the UnixPC-specific "libtam".
+# In the unlikely case that both atexit() and libtam functions are needed, use static linking.
+fgrep '=' $PREFIX/unixpc/lib/shlib.ifile | fgrep -v user_mem | (
+    sed 's/^exit /_cuexit /' |
+    sed 's/^\s*\(.*\)\s*=\s*\(.*\);/.equ \1, \2\n.globl \1/' ;
+    echo ".section .lib"
+    cat <<EOF
+	.text
+	.globl	exit
+1:
+	subql #1,%d0
+	movel %d0,_nexitfunc
+	lsll #2,%d0
+	lea _exitfuncs,%a1
+	movel %a1@(%d0:l),%a1
+	jbsr %a1@
+exit:
+	movel _nexitfunc,%d0
+	jgt 1b
+	jmp _cuexit
+.comm _exitfuncs,128
+.comm _nexitfunc,4
+EOF
+)  >shlib.ifile.s
+$PREFIX/bin/unixpc-as -o $PREFIX/unixpc/lib/shlib.ifile.o shlib.ifile.s
+
 cd ..
 
 $PREFIX/bin/unixpc-gcc -o build/hello test/hello.c -O
 $PREFIX/bin/unixpc-gcc -o build/testexit test/testexit.c -O
 $PREFIX/bin/unixpc-gcc -o build/testmain test/testmain.c -O
+$PREFIX/bin/unixpc-gcc -s -shlib -o build/hello-shlib test/hello.c -O
+$PREFIX/bin/unixpc-gcc -s -shlib -o build/testexit-shlib test/testexit.c -O
+$PREFIX/bin/unixpc-gcc -s -shlib -o build/testmain-shlib test/testmain.c -O

@@ -21,26 +21,37 @@ This is rudimentary semi-ancient GCC cross compiler for the AT&T Unix PC
 
 This has been only lightly tested.
 
-There is, as yet, no support for the Unix PC shared library.
-
 Non-default linker modes, like -n and -N, may appear to work, but don't do
 what they're supposed to.
+
+The UnixPC shared library may be used by including "-shlib" in the compiler
+command line for linking.
 
 In order to support GNU-style static constructors and destructors,
 this port provides its own implementations of the C library functions
 `atexit()`, `exit()`, and `_exit()`, and installs these in its private
 copy of libc.a.
 
-These new functions aren't implemented yet for the profiling version of
-the C library, nor for the shared library /lib/shlib.  So currently this
-cross compiler only creates statically linked, non-profiled programs.
+When the shared library is linked, its exit() entry point is replaced by
+a shim that calls registered atexits before jumping to the real exit().
+However, there are a few functions within the shared library itself that
+directly link to the "real" exit().  If these functions are used,
+registered atexits may not be called.
+
+Fortunately, all shlib functions that directly call exit() are part of
+the very UnixPC-specific "libtam" ("terminal access methods") library,
+not the ordinary C library.  Therefore programs that use only ordinary
+libc functions will not have this problem.
+
+Workaround: In the unlikely case that you need both atexit() and libtam
+functions in the same program, link statically.
+
+The atexit() support is not yet included in the profiling version of the
+C library, so this cross-compiler doesn't support profiling (yet).
 
 # Future plans (maybe)
 
 * add atexit() support to the profiling C library
-
-* add atexit() support for the Unix PC's shared library /lib/shlib
-  (this will require installation of a new /lib/shlib on the 3b1)
 
 * cross-compile the compiler itself for a Unix PC native version of GCC
   (this might require moving to an even older version of GCC to fit the
@@ -59,4 +70,5 @@ The header and library files in `dist/unixpc-xenv.tar.xz` are copied
 from a Unix 3.51m installation, with the development tools installed,
 running under the FreeBee emulator.
 
-The patches are my own work together with contributions by Alain Knaff.
+The build script and patches are my own work together with contributions
+by Alain Knaff.

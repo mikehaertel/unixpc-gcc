@@ -40,10 +40,22 @@ diff -ru ../dist/gcc-3.3.6/gcc/combine.c ./gcc/combine.c
  	 CONST_INT is not valid, because after the replacement, the
 diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
 --- ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h	2002-08-29 14:40:13.000000000 -0700
-+++ ./gcc/config/m68k/3b1g.h	2022-10-03 20:25:39.019550342 -0700
-@@ -38,10 +38,46 @@
++++ ./gcc/config/m68k/3b1g.h	2022-10-11 21:36:25.516940047 -0700
+@@ -37,11 +37,58 @@
+ #define ASM_SPEC \
   "%{m68020:-mc68020}%{mc68020:-mc68020}%{!mc68020:%{!m68020:-mc68010}}"
  
++/* we use /lib/libp/lib*  when profiling */
++
++#undef LIB_SPEC
++#define LIB_SPEC "%{p:-L/lib/libp} %{pg:-L/lib/libp} %{shlib:shlib.ifile.o%s} -lc"
++
++/* shared libraries need to use crt0s.o  */
++
++#undef STARTFILE_SPEC
++#define STARTFILE_SPEC \
++  "%{!shlib:%{pg:mcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}%{shlib:crt0s.o%s}"
++
  /* Names to predefine in the preprocessor for this target machine.  */
 -#define CPP_PREDEFINES "-Dmc68000 -Dmc68k -Dunix -Dunixpc -Asystem=unix  -Asystem=svr3 -Acpu=m68k -Amachine=m68k"
 +#define CPP_PREDEFINES "-Dmc68000 -Dmc68k -Dunix -Dunixpc -Asystem=unix -Asystem=svr2 -Acpu=m68k -Amachine=m68k"
@@ -91,7 +103,7 @@ diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
  
  /* Specify how to pad function arguments.
     Value should be `upward', `downward' or `none'.
-@@ -56,6 +92,33 @@
+@@ -56,6 +99,33 @@
  /* Every structure or union's size must be a multiple of 2 bytes.  */
  #define STRUCTURE_SIZE_BOUNDARY 16
  
