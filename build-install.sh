@@ -66,10 +66,8 @@ make && make install
 cd ..
 
 cd ../lib
-$PREFIX/bin/unixpc-gcc -c -O2 -Wall atexit.c -o ../build/atexit.o
-$PREFIX/bin/unixpc-gcc -c -O2 -Wall exit.c -o ../build/exit.o
-$PREFIX/bin/unixpc-as -o ../build/_exit.o _exit.s
 $PREFIX/bin/unixpc-gcc -c -O2 -Wall raise.c -o ../build/raise.o
+objs=raise.o
 
 cd ../libgcc
 $PREFIX/bin/unixpc-gcc -c -O3 -Os -fomit-frame-pointer -o ../build/divsi3.o divsi3.c
@@ -97,7 +95,6 @@ for i in subsf3; do
 done
 
 cd ../build
-$PREFIX/bin/unixpc-ar r $PREFIX/unixpc/lib/libc.a atexit.o exit.o _exit.o raise.o
 $PREFIX/bin/unixpc-ar r $PREFIX/lib/gcc-lib/unixpc/3.3.6/libgcc.a divsi3.o modsi3.o mulsi3.o udivsi3.o umodsi3.o $objs
 
 # Convert $PREFIX/unixpc/lib/shlib.ifile to a form usable by binutils ld, replacing exit()
@@ -108,23 +105,6 @@ fgrep '=' $PREFIX/unixpc/lib/shlib.ifile | fgrep -v user_mem | (
     sed 's/^exit /_cuexit /' |
     sed 's/^\s*\(.*\)\s*=\s*\(.*\);/.equ \1, \2\n.globl \1/' ;
     echo ".section .lib"
-    cat <<EOF
-	.text
-	.globl	exit
-1:
-	subql #1,%d0
-	movel %d0,_nexitfunc
-	lsll #2,%d0
-	lea _exitfuncs,%a1
-	movel %a1@(%d0:l),%a1
-	jbsr %a1@
-exit:
-	movel _nexitfunc,%d0
-	jgt 1b
-	jmp _cuexit
-.comm _exitfuncs,128
-.comm _nexitfunc,4
-EOF
 )  >shlib.ifile.s
 $PREFIX/bin/unixpc-as -o $PREFIX/unixpc/lib/shlib.ifile.o shlib.ifile.s
 

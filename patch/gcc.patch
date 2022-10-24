@@ -9,6 +9,18 @@ diff -ru ../dist/gcc-3.3.6/config.sub ./config.sub
  		;;
  	3b*)
  		basic_machine=we32k-att
+diff -ru ../dist/gcc-3.3.6/gcc/Makefile.in ./gcc/Makefile.in
+--- ../dist/gcc-3.3.6/gcc/Makefile.in	2004-04-01 08:55:23.000000000 -0800
++++ ./gcc/Makefile.in	2022-10-24 07:12:54.997432890 -0700
+@@ -801,7 +801,7 @@
+     _fixunsdfdi _fixdfdi _fixunssfdi _fixsfdi _fixxfdi _fixunsxfdi
+ 
+ LIB2FUNCS_2 = _floatdixf _fixunsxfsi _fixtfdi _fixunstfdi _floatditf \
+-    _clear_cache _trampoline __main _exit _absvsi2 _absvdi2 _addvsi3 \
++    _clear_cache _trampoline __main _exit _cuexit _absvsi2 _absvdi2 _addvsi3 \
+     _addvdi3 _subvsi3 _subvdi3 _mulvsi3 _mulvdi3 _negvsi2 _negvdi2 _ctors
+ 
+ # Defined in libgcc2.c, included only in the static library.
 diff -ru ../dist/gcc-3.3.6/gcc/collect2.c ./gcc/collect2.c
 --- ../dist/gcc-3.3.6/gcc/collect2.c	2003-12-08 11:02:39.000000000 -0800
 +++ ./gcc/collect2.c	2022-08-14 09:58:19.321071827 -0700
@@ -40,7 +52,7 @@ diff -ru ../dist/gcc-3.3.6/gcc/combine.c ./gcc/combine.c
  	 CONST_INT is not valid, because after the replacement, the
 diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
 --- ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h	2002-08-29 14:40:13.000000000 -0700
-+++ ./gcc/config/m68k/3b1g.h	2022-10-12 08:42:37.089411841 -0700
++++ ./gcc/config/m68k/3b1g.h	2022-10-24 07:12:39.849279791 -0700
 @@ -37,11 +37,58 @@
  #define ASM_SPEC \
   "%{m68020:-mc68020}%{mc68020:-mc68020}%{!mc68020:%{!m68020:-mc68010}}"
@@ -103,13 +115,16 @@ diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
  
  /* Specify how to pad function arguments.
     Value should be `upward', `downward' or `none'.
-@@ -56,6 +99,33 @@
+@@ -56,6 +103,36 @@
  /* Every structure or union's size must be a multiple of 2 bytes.  */
  #define STRUCTURE_SIZE_BOUNDARY 16
  
 +/* Every function parameter must be aligned to a multiple of 2 bytes.*/
 +#define PARM_BOUNDARY 16
 +  
++/* The 3b1 does not have atexit(); use GCC-provided implementation. */
++#define NEED_ATEXIT
++
  /* Generate calls to memcpy, memcmp and memset.  */
  #define TARGET_MEM_FUNCTIONS
 +  
@@ -137,3 +152,58 @@ diff -ru ../dist/gcc-3.3.6/gcc/config/m68k/3b1g.h ./gcc/config/m68k/3b1g.h
 +    }								\
 +  while (0)
  
+diff -ru ../dist/gcc-3.3.6/gcc/libgcc2.c ./gcc/libgcc2.c
+--- ../dist/gcc-3.3.6/gcc/libgcc2.c	2002-10-23 03:47:24.000000000 -0700
++++ ./gcc/libgcc2.c	2022-10-24 07:39:53.248127551 -0700
+@@ -1956,8 +1956,7 @@
+   return (0);
+ }
+ 
+-extern void _cleanup (void);
+-extern void _exit (int) __attribute__ ((__noreturn__));
++extern void _cuexit (int) __attribute__ ((__noreturn__));
+ 
+ void
+ exit (int status)
+@@ -1972,12 +1971,7 @@
+       free (atexit_chain);
+       atexit_chain = 0;
+     }
+-#ifdef EXIT_BODY
+-  EXIT_BODY;
+-#else
+-  _cleanup ();
+-#endif
+-  _exit (status);
++  _cuexit(status);
+ }
+ 
+ #else /* ON_EXIT */
+@@ -1993,3 +1987,27 @@
+ #endif /* NEED_ATEXIT */
+ 
+ #endif /* L_exit */
++
++
++#ifdef L_cuexit
++
++#ifdef NEED_ATEXIT
++#ifndef ON_EXIT
++
++extern void _exit (int) __attribute__ ((__noreturn__));
++
++void
++_cuexit(int status)
++{
++#ifdef EXIT_BODY
++  EXIT_BODY;
++#else
++  _cleanup ();
++#endif
++  _exit (status);
++}
++
++#endif /* ON_EXIT */
++#endif /* NEED_ATEXIT */
++
++#endif /* L_cuexit */
